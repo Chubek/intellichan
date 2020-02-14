@@ -22,7 +22,9 @@ const ImageOPSchema = new Schema({
     },
     votes_id: String,
     replies_id: [String],
-    cert_id: String
+    cert_id: String,
+    spam_ham_id: String,
+    hidden_id: String
 
 })
 
@@ -47,7 +49,9 @@ const VideoOPSchema = new Schema({
     },
     votes_id: String,
     replies_id: [String],
-    cert_id: String
+    cert_id: String,
+    spam_ham_id: String,
+    hidden_id: String
 
 })
 
@@ -72,7 +76,9 @@ const AudioOPSchema = new Schema({
     },
     votes_id: String,
     replies_id: [String],
-    cert_id: String
+    cert_id: String,
+    spam_ham_id: String,
+    hidden_id: String
 
 })
 
@@ -82,6 +88,7 @@ const AnonymousOPSchema = new Schema({
         required: true,
         unique: true
     },
+    submitter_id: String,
     submitter_name: {
         type: String,
         default: "Anonymous"
@@ -95,7 +102,42 @@ const AnonymousOPSchema = new Schema({
     },
     replies_id: [String],
     votes_id: String,
-    cert_id: String
+    cert_id: String,
+    spam_ham_id: String,
+    hidden_id: String
+})
+
+
+const AnonymousReplySchema = new Schema({
+    numerical_id: {
+        type: Number,
+        required: true,
+        unique: true
+    },
+    op_id: {
+        type: String,
+        required: true
+    },
+    submitter_id: {
+        type: String,
+        required: true,
+
+    },
+    submitter_name: {
+        type: String,
+        default: "Anonymous"
+    },
+    image_id: String,
+    content_id: String,
+    date_submitted: {
+        type: Date,
+        default: Date.now
+    },
+    votes_id: String,
+    cert_id: String,
+    spam_ham_id: String,
+    hidden_id: String
+
 })
 
 
@@ -109,7 +151,12 @@ const ImageReplySchema = new Schema({
         type: String,
         required: true
     },
-    op_type: String,
+    submitter_id: {
+        type: String,
+        required: true,
+
+    },
+    submitter_name: String,
     image_id: String,
     content_id: String,
     date_submitted: {
@@ -117,7 +164,9 @@ const ImageReplySchema = new Schema({
         default: Date.now
     },
     votes_id: String,
-    cert_id: String
+    cert_id: String,
+    spam_ham_id: String,
+    hidden_id: String
 })
 
 
@@ -131,7 +180,12 @@ const VideoReplySchema = new Schema({
         type: String,
         required: true
     },
-    op_type: String,
+    submitter_id: {
+        type: String,
+        required: true,
+
+    },
+    submitter_name: String,
     video_id: String,
     content_id: String,
     date_submitted: {
@@ -139,7 +193,9 @@ const VideoReplySchema = new Schema({
         default: Date.now
     },
     votes_id: String,
-    cert_id: String
+    cert_id: String,
+    spam_ham_id: String,
+    hidden_id: String
 })
 
 
@@ -153,7 +209,12 @@ const AudioReplySchema = new Schema({
         type: String,
         required: true
     },
-    op_type: String,
+    submitter_id: {
+        type: String,
+        required: true,
+
+    },
+    submitter_name: String,
     audio_id: String,
     content_id: String,
     date_submitted: {
@@ -161,7 +222,9 @@ const AudioReplySchema = new Schema({
         default: Date.now
     },
     votes_id: String,
-    cert_id: String
+    cert_id: String,
+    spam_ham_id: String,
+    hidden_id: String
 })
 
 const PostContentSchema = new Schema({
@@ -178,20 +241,56 @@ const PostContentSchema = new Schema({
 
 })
 
+const HamSpamSchema = new Schema({
+    post_id: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    ham_percentage: Number,
+    spam_percentage: Number
+})
+
+const HiddenPostSchema = new Schema({
+    post_id: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    user_hidden: {
+        type: Boolean,
+        default: false
+    },
+    mod_hidden: {
+        type: Boolean,
+        default: false
+    },
+    admin_hidden: {
+        type: Boolean,
+        default: false
+    }
+})
+
 const PostContent = mongoose.model("PostContent", PostContentSchema)
 const ImageReply = mongoose.model("ThreadReply", ImageReplySchema)
 const VideoReply = mongoose.model("ThreadReply", VideoReplySchema)
 const AudioReply = mongoose.model("ThreadReply", AudioReplySchema)
+const AnonymousReply = mongoose.model("AnonymousReply", AnonymousReplySchema)
 const AnonymousOP = mongoose.model("AnonymousOP", AnonymousOPSchema)
 const VideoOP = mongoose.model("VideoOP", VideoOPSchema)
 const ImageOP = mongoose.model("ImageOP", ImageOPSchema)
 const AudioOP = mongoose.model("AudioOP", AudioOPSchema)
+const HamSpam = mongoose.model("HamSpam", HamSpamSchema)
+const HiddenPost = mongoose.model("HiddenPost", HiddenPostSchema)
 
 module.exports = {PostContent,
                     ImageReply,
                     AudioReply,
                     VideoReply,
+                    AnonymousReply,
                     AudioOP,
                     AnonymousOP,
                     VideoOP,
-                    ImageOP}
+                    ImageOP,
+                    HiddenPost,
+                    HamSpam}

@@ -29,53 +29,69 @@ const ImageMetadataSchema = new Schema({
         required: true
     },
     sha256: String,
-    exif: {
-        file_name: String,
-        file_size: Number,
-        file_modify_date: Date,
-
-        file_type: String,
-        MIME_type: String,
-
-        image_size_width: Number,
-        image_size_height: Number,
-
-        PNG: {
-            bit_depth: Number,
-            color_type: String,
-            compression: String,
-            filter: String,
-            interlace: String
-        },
-
-        JPEG: {
-            encoding_process: String,
-            bps: Number,
-            color_components: Number,
-            YCbCr_ss: String,
-
-            JFIF: {
-                version: String,
-                res_unit: String,
-                X_res: Number,
-                Y_res: Number
+    exif_data: { 
+        image: 
+            { Make: String,
+              Model: String,
+              Orientation: Number,
+              XResolution: Number,
+              YResolution: Number,
+              ResolutionUnit: Number,
+              Software: String,
+              ModifyDate: Date,
+              ExifOffset: Number,
+              GPSInfo: Number 
+            },
+           exif: 
+            { ExposureTime: mongoose.Types.Decimal128,
+              FNumber: mongoose.Types.Decimal128,
+              ExposureProgram: Number,
+              ISO: Number,
+              ExifVersion: Buffer,
+              DateTimeOriginal: Date,
+              DateTimeDigitized: Date,
+              ComponentsConfiguration: Buffer,
+              ShutterSpeedValue: mongoose.Types.Decimal128,
+              ApertureValue: mongoose.Types.Decimal128,
+              BrightnessValue: mongoose.Types.Decimal128,
+              ExposureBiasValue: Number,
+              MeteringMode: Number,
+              Flash: Number,
+              FocalLength: mongoose.Types.Decimal128,
+              SubjectArea: [Number],
+              MakerNote: Buffer,
+              SubSecTimeOriginal: String,
+              SubSecTimeDigitized: String,
+              FlashpixVersion: Buffer,
+              ColorSpace: Number,
+              PixelXDimension: Number,
+              PixelYDimension: Number,
+              SensingMethod: Number,
+              SceneType: Buffer,
+              ExposureMode: Number,
+              WhiteBalance: Number,
+              FocalLengthIn35mmFormat: Number,
+              SceneCaptureType: Number,
+              LensSpecification: [mongoose.Types.Decimal128],
+              LensMake: String,
+              LensModel: String },
+           gps: 
+            { GPSLatitudeRef: String,
+              GPSLatitude: [mongoose.Types.Decimal128],
+              GPSLongitudeRef: String,
+              GPSLongitude: [mongoose.Types.Decimal128],
+              GPSAltitudeRef: Number,
+              GPSAltitude: Number,
+              GPSTimeStamp: [mongoose.Types.Decimal128],
+              GPSSpeedRef: String,
+              GPSSpeed: Number,
+              GPSImgDirectionRef: String,
+              GPSImgDirection: mongoose.Types.Decimal128,
+              GPSDestBearingRef: String,
+              GPSDestBearing: mongoose.Types.Decimal128,
+              GPSDateStamp: String } 
             }
-
-        },
-
-        GIF: {
-            version: String,
-            has_color_map: Boolean,
-            color_res_depth: Number,
-            bpp: Number,
-            bg_color: Number,
-            animation_iter: String,
-            frame_count: Number,
-            duration: mongoose.Types.Decimal128
-
-        }
-    }
-
+    
 })
 
 const ImageThumbSchema = new Schema({
@@ -88,3 +104,97 @@ const ImageThumbSchema = new Schema({
 
 //NOTE: as Vuetify can display images in different resolutions, the above schema will most likely go unused.
 
+const ThreadAudioSchema = new Schema({
+    thread_id: {
+        type: String,
+        required: true
+    },
+    audio_file_id: String,
+    audio_metadata_id: String,
+    
+})
+
+const AudioFileSchema = new Schema({
+    thread_audio_id: {
+        type: String,
+        required: true
+    }, //ThreadAudioSchema
+    upload_path: String,
+    date_uploaded: {
+        type: Date,
+        default: Date.now 
+    }
+})
+
+const AudioMetadataSchema = new Schema({
+    thread_audio_id: {
+        type: String,
+        required: true
+    },
+    sha256: String,
+    format: {
+        container: String,
+        codec: String,
+        codec_profile: String,
+        duration: mongoose.Types.Decimal128,
+        bitrate: Number,
+        sample_rate: mongoose.Types.Decimal128,
+        lossless: Boolean,
+        channels: Number
+    },
+    generic_tags: {
+        title: String,
+        tracks: Number,
+        artist: String,
+        artists: [String],
+        album_artist: String,
+        composer: String,
+        year: Number,
+        album: String,
+        label: String,
+        genres: [String],
+        avg_gain_level: Number
+    }
+})
+
+const ThreadVideoSchema = new Schema({
+    thread_id: {
+        type: String,
+        required: true
+    },
+    video_file_id: String,
+    video_metadata_id: String,
+    thumb_file_id: String
+})
+
+const VideoFileSchema = new Schema({
+    thread_video_id: {
+        type: String,
+        required: true
+    }, //ThreadVideoSchema
+    upload_path: String,
+    date_uploaded: {
+        type: Date,
+        default: Date.now 
+    }
+})
+
+const VideoThumbSchema = new Schema({
+    thread_video_id: {
+        type: String,
+        required: true,
+    },
+    thumb_path: String,
+    date_created: {
+        type: Date,
+        default: Date.now
+    }
+})
+
+const VideoMetadataSchema = new Schema({
+    thread_video_id: {
+        type: String,
+        required: true
+    },
+
+})

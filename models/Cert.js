@@ -167,6 +167,7 @@ const UserCertSchema = new Schema({
         type: String,
         required: true
     },
+    transactions_id: [String],
     woke_certs_id: [String],
     lame_certs_id: [String],
     neg_certs_id: [String],
@@ -187,11 +188,11 @@ const CertTransactionSchema = new Schema({
     }
 })
 
-const  CertTransaction = mongoose.model("CertTransaction",  CertTransactionSchema)
-const  UserCert = mongoose.model("UserCert",  UserCertSchema)
-const  NegativeCert = mongoose.model("NegativeCert",  NegativeCertSchema)
-const  PositiveCert = mongoose.model("PositiveCert",  PositiveCertSchema)
-const  LameCert = mongoose.model("LameCert",  LameCertSchema)
+const CertTransaction = mongoose.model("CertTransaction",  CertTransactionSchema)
+const UserCert = mongoose.model("UserCert",  UserCertSchema)
+const NegativeCert = mongoose.model("NegativeCert",  NegativeCertSchema)
+const PositiveCert = mongoose.model("PositiveCert",  PositiveCertSchema)
+const LameCert = mongoose.model("LameCert",  LameCertSchema)
 const WokeCert = mongoose.model("WokeCert", WokeCertSchema)
 const IntegralCert = mongoose.model("IntegralCert", IntegralCertSchema)
 const ReplyCert = mongoose.model("ReplyCert", ReplyCertSchema)
