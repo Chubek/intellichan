@@ -21,7 +21,8 @@ const ImageOPSchema = new Schema({
         default: Date.now
     },
     votes_id: String,
-    replies_id: [String]
+    replies_id: [String],
+    cert_id: String
 
 })
 
@@ -45,7 +46,33 @@ const VideoOPSchema = new Schema({
         default: Date.now
     },
     votes_id: String,
-    replies_id: [String]
+    replies_id: [String],
+    cert_id: String
+
+})
+
+const AudioOPSchema = new Schema({
+    numerical_id: {
+        type: Number,
+        required: true,
+        unique: true
+    },
+    submitter_id: {
+        type: String,
+        required: true,
+
+    },
+    submitter_name: String,
+    audios_id: [String],
+    content_id: String,
+    meta_rec_id: String, //recommender system stuff
+    date_submitted: {
+        type: Date,
+        default: Date.now
+    },
+    votes_id: String,
+    replies_id: [String],
+    cert_id: String
 
 })
 
@@ -61,16 +88,18 @@ const AnonymousOPSchema = new Schema({
     },
     image_id: String,
     content_id: String,
+    meta_rec_id: String,
     date_submitted: {
         type: Date,
         default: Date.now
     },
     replies_id: [String],
-    votes_id: String
+    votes_id: String,
+    cert_id: String
 })
 
 
-const ThreadReplySchema = new Schema({
+const ImageReplySchema = new Schema({
     numerical_id: {
         type: Number,
         required: true,
@@ -87,7 +116,52 @@ const ThreadReplySchema = new Schema({
         type: Date,
         default: Date.now
     },
-    votes_id: String
+    votes_id: String,
+    cert_id: String
+})
+
+
+const VideoReplySchema = new Schema({
+    numerical_id: {
+        type: Number,
+        required: true,
+        unique: true
+    },
+    op_id: {
+        type: String,
+        required: true
+    },
+    op_type: String,
+    video_id: String,
+    content_id: String,
+    date_submitted: {
+        type: Date,
+        default: Date.now
+    },
+    votes_id: String,
+    cert_id: String
+})
+
+
+const AudioReplySchema = new Schema({
+    numerical_id: {
+        type: Number,
+        required: true,
+        unique: true
+    },
+    op_id: {
+        type: String,
+        required: true
+    },
+    op_type: String,
+    audio_id: String,
+    content_id: String,
+    date_submitted: {
+        type: Date,
+        default: Date.now
+    },
+    votes_id: String,
+    cert_id: String
 })
 
 const PostContentSchema = new Schema({
@@ -105,13 +179,19 @@ const PostContentSchema = new Schema({
 })
 
 const PostContent = mongoose.model("PostContent", PostContentSchema)
-const ThreadReply = mongoose.model("ThreadReply", ThreadReplySchema)
+const ImageReply = mongoose.model("ThreadReply", ImageReplySchema)
+const VideoReply = mongoose.model("ThreadReply", VideoReplySchema)
+const AudioReply = mongoose.model("ThreadReply", AudioReplySchema)
 const AnonymousOP = mongoose.model("AnonymousOP", AnonymousOPSchema)
 const VideoOP = mongoose.model("VideoOP", VideoOPSchema)
 const ImageOP = mongoose.model("ImageOP", ImageOPSchema)
+const AudioOP = mongoose.model("AudioOP", AudioOPSchema)
 
 module.exports = {PostContent,
-                    ThreadReply,
+                    ImageReply,
+                    AudioReply,
+                    VideoReply,
+                    AudioOP,
                     AnonymousOP,
                     VideoOP,
                     ImageOP}

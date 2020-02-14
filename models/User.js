@@ -11,10 +11,12 @@ const UserSchema = new Schema({
     permission_id: String,
     transactions_id: [String],
     recommender_id: String,
-    post_votes_id: String,
+    votes_id: String,
     users_subbed: [String],
     subbed_users: [String],
-    banned_id: String
+    banned_id: String,
+    cert_id: String,
+    payment_id: String
 
 })
 
@@ -36,29 +38,7 @@ const UserInfoSchema = new Schema({
 
 })
 
-const UserVotesSchema = new Schema({
-    user_id: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    upvoted_posts: [String],
-    downvoted_posts: [String],
-    posts_upvoted: [String],
-    posts_downvoted: [String],
-    upvoted_threads: [String],
-    downvoted_threads: [String],
-    threads_upvoted: [String],
-    threads_downvoted: [String],
-    post_score: {
-        type: Number,
-        default: 1
-    },
-    thread_score: {
-        type: Number,
-        default: 1
-    }  
-})
+
 
 const UserPermissionSchema = new Schema({
     user_id: {
@@ -83,10 +63,10 @@ const UserPermissionSchema = new Schema({
         default: false
     },
     
-    golds_id: [String]
+    vip_id: [String]
 })
 
-const UserGoldSchema = new Schema({
+const UserVIPSchema = new Schema({
     user_id: {
         type: String,
         required: true,
@@ -134,9 +114,8 @@ const UserBannedSchema = new Schema({
 
 const User = mongoose.model("User", UserSchema)
 const UserTransaction = mongoose.model("UserTransacion", UserTransactionsSchema)
-const UserGold = mongoose.model("UserGold", UserGoldSchema)
+const UserVIP = mongoose.model("UserGold", UserVIPSchema)
 const UserPermission = mongoose.model("UserPermission", UserPermissionSchema)
-const UserVotes = mongoose.model("UserVotes", UserVotesSchema)
 const UserInfo = mongoose.model("UserInfo", UserInfoSchema)
 const UserBanned = mongoose.model("UserBanned", UserBannedSchema)
 
@@ -144,8 +123,7 @@ const UserBanned = mongoose.model("UserBanned", UserBannedSchema)
 
 module.exports = {User,
                     UserTransaction,
-                    UserGold,
+                    UserVIP,
                     UserPermission,
-                    UserVotes,
                     UserInfo,
                     UserBanned}
