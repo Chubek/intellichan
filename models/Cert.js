@@ -185,7 +185,8 @@ const CertTransactionSchema = new Schema({
     finalized: {
         type: Boolean,
         default: false
-    }
+    },
+    payment_id: String
 })
 
 const CertTransaction = mongoose.model("CertTransaction",  CertTransactionSchema)

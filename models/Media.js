@@ -29,6 +29,8 @@ const ImageMetadataSchema = new Schema({
         required: true
     },
     sha256: String,
+    type: String,
+    mime_type: String,
     exif_data: { 
         image: 
             { Make: String,
@@ -104,6 +106,19 @@ const ImageThumbSchema = new Schema({
 
 //NOTE: as Vuetify can display images in different resolutions, the above schema will most likely go unused.
 
+const ImageLocationSchema = new Schema({
+    thread_image_id: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    location: String,
+    shared: {
+        type: Boolean,
+        default: false
+    }
+})
+
 const ThreadAudioSchema = new Schema({
     thread_id: {
         type: String,
@@ -132,28 +147,32 @@ const AudioMetadataSchema = new Schema({
         required: true
     },
     sha256: String,
-    format: {
-        container: String,
-        codec: String,
-        codec_profile: String,
-        duration: mongoose.Types.Decimal128,
-        bitrate: Number,
-        sample_rate: mongoose.Types.Decimal128,
-        lossless: Boolean,
-        channels: Number
-    },
-    generic_tags: {
-        title: String,
-        tracks: Number,
-        artist: String,
-        artists: [String],
-        album_artist: String,
-        composer: String,
-        year: Number,
-        album: String,
-        label: String,
-        genres: [String],
-        avg_gain_level: Number
+    type: String,
+    mime_type: String,
+    tags: {
+        format: {
+            container: String,
+            codec: String,
+            codec_profile: String,
+            duration: mongoose.Types.Decimal128,
+            bitrate: Number,
+            sample_rate: mongoose.Types.Decimal128,
+            lossless: Boolean,
+            channels: Number
+        },
+        generic_tags: {
+            title: String,
+            tracks: Number,
+            artist: String,
+            artists: [String],
+            album_artist: String,
+            composer: String,
+            year: Number,
+            album: String,
+            label: String,
+            genres: [String],
+            avg_gain_level: Number
+        }
     }
 })
 
@@ -196,5 +215,37 @@ const VideoMetadataSchema = new Schema({
         type: String,
         required: true
     },
+    sha256: String,
+    type: String,
+    mime_type: String,
+    duration: mongoose.Types.Decimal128
 
 })
+
+const VideoMetadata = mongoose.model("VideoMetadata", VideoMetadataSchema)
+const AudioMetadata = mongoose.model("AudioMetadata", AudioMetadataSchema)
+const ImageMetadata = mongoose.model("ImageMetadata", ImageMetadataSchema)
+const VideoFile = mongoose.model("VideoFile", VideoFileSchema)
+const AudioFile = mongoose.model("AudioFile", AudioFileSchema)
+const ImageFile = mongoose.model("ImageFile", ImageFileSchema)
+const ThreadVideo = mongoose.model("ThreadVideo", ThreadVideoSchema)
+const ThreadAudio = mongoose.model("ThreadAudio", ThreadAudioSchema)
+const ThreadImage = mongoose.model("ThreadImage", ThreadImageSchema)
+const ImageLocation = mongoose.model("ImageLocation", ImageLocationSchema)
+const  VideoThumb = mongoose.model("VideoThumb",  VideoThumbSchema)
+const ImageThumb = mongoose.model("ImageThumb", ImageThumbSchema)
+
+module.exports = {
+    VideoMetadata,
+    AudioMetadata,
+    ImageMetadata,
+    VideoFile,
+    AudioFile,
+    ImageFile,
+    ThreadAudio,
+    ThreadVideo,
+    ThreadImage,
+    ImageLocation,
+    VideoThumb,
+    ImageThumb
+}

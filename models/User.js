@@ -16,7 +16,9 @@ const UserSchema = new Schema({
     subbed_users: [String],
     banned_id: String,
     cert_id: String,
-    payment_id: String
+    payment_id: String,
+    promotions_id: String,
+    
 
 })
 
@@ -26,7 +28,28 @@ const UserInfoSchema = new Schema({
         required: true,
         unique: true
     },
-    bio: String,
+    bio: {
+        biography: String,
+        lives_in: String,
+        birthday: Date,
+        age: Number,
+
+    },
+    pages: {
+        facebook_profile: String,
+        twitter_profile: String,
+        reddit_profile: String,
+        tiktok_id: String,
+        google_id: String,
+        youtube_profile: String,
+        pinterest_profile: String,
+    
+    },
+    gamertags: {
+        xbl: String,
+        psn: String,
+        steam: String
+    },
     number_of_posts: {
         type: Number,
         default: 0
@@ -85,7 +108,7 @@ const UserTransactionsSchema = new Schema({
         type: String,
         required: true
     },
-    gold_id: String,
+    vip_id: String,
     date: {
         type: Date,
         default: Date.now
@@ -94,8 +117,8 @@ const UserTransactionsSchema = new Schema({
     paid: {
         type: Boolean,
         default: false
-    }
-
+    },
+    payment_id: String
 })
 
 const UserBannedSchema = new Schema({
