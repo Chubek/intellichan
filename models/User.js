@@ -18,6 +18,7 @@ const UserSchema = new Schema({
     cert_id: String,
     payment_id: String,
     promotions_id: String,
+    watcher_id: String
     
 
 })

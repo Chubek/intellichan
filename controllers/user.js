@@ -83,30 +83,38 @@ router.get('/permission/:permissionid', auth, (req, res) => {
 
 })
 
-// @route   GET /user/get-vip
+// @route   GET /user/get-vip-status/:uid
 // @desc    Get user info based on id
 // @access  Private
-router.get('/get-vip-status', auth, (req, res) => {
-    const userId = req.user.id
+router.get('/get-vip-status/:uid', auth, (req, res) => {
+    const authId = req.user.id
+    const userId = req.params.uid
 
-    UserSchema.findOne({_id: userId})
+    UserPermissionSchema.find({user_id: authId})
+        .then(auth_doc => {
+            if (auth_doc.is_admin || auth_doc.is_janitor || auth_doc.is_mod) {
+                UserSchema.findOne({_id: userId})
         .then(doc_user => {
             const permissionId = doc_user.permission_id
             UserPermissionSchema.find({_id: permissionId, user_id: userId})
                 .then(doc_permission => {
                     const vipId = doc_permission.vip_id
 
-                    if (doc_permission.is_janitor || doc_permission.is_admin || doc_permission.is_mod) {
+                   UserVIPSchema.find({_id: {$all: vipId}, user_id: userId})
+                        .then(doc_vip => {
+                                  
+                            doc_vip.forEach(doc => {
+                                ret = []
+                                if (doc.is_active) {
+                                          ret.push(doc)
+                                    } 
 
-                        
-                        UserVIPSchema.find({_id: {$all: vipId}, user_id: userId})
-                            .then(doc_vip => {
-                                  doc_vip.forEach(doc => {
-                                      if (doc.is_active) {
-                                          res.status(200).json({doc})
-                                        } else {
-                                        res.status(404).json({message: "Is not active."})
-                            }
+                                    if (ret.length > 0) {
+                                        res.status(200).json({ret})
+                                    } else {
+                                        res.status(404)
+                                        console.log("No active VIP subscriptions.")
+                                    }
                         })
                     })
                     .catch(e => {
@@ -117,7 +125,7 @@ router.get('/get-vip-status', auth, (req, res) => {
                             res.status(500).json({e})
                             console.log(e)
                         })
-                    }
+                    
                 })
                 .catch(e => {
                     res.status(500).json({e})
@@ -128,6 +136,17 @@ router.get('/get-vip-status', auth, (req, res) => {
             res.status(500).json({e})
             console.log(e)
         })
+
+            }
+        })
+        .catch(e => {
+            res.status(200).json({ e })
+            console.log(e)
+        })
+
+
+
+
 })
 
 // @route   GET /user/get-transactions/:trid
@@ -147,11 +166,47 @@ router.get('/get-transaction/:trid', auth, (req, res) => {
             })
 })
 
+// @route   GET /user/get-banned-status/:uid
+// @desc    Get user banned status
+// @access  Private
+router.get('/get-banned-status/:uid', auth, (req, res) => {
+    const authId = req.user.id
+    const userId = req.params.uid
+
+    UserPermissionSchema.find({user_id: authId})
+        .then(auth_doc => {
+            if (auth_doc.is_admin || auth_doc.is_mod || auth_doc.is_janitor) {
+                UserSchema.find({_id: userId})
+                    .then(user_doc => {
+                        const bannedId = user_doc.banned_id
+
+                        UserBannedSchema.find({_id: bannedId, user_id: userId})
+                            .then(banned_doc => {
+                                res.status(200).json({banned_doc})
+                            })
+                            .catch(e => {
+                                res.status(500).json({ e })
+                                console.log(e)
+                            })
+                    })
+                    .catch(e => {
+                        res.status(500).json({ e })
+                        console.log(e)
+                    })
+            }
+        })
+        .catch(e => {
+            res.status(500).json({ e })
+            console.log(e)
+        })
+})
+
+
 //USER -> POSTs
 
 //USER -> PUTs
 
-//USER -> DELs
+//USER ->  DELs
 
 
 module.exports = router

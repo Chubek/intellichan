@@ -10,6 +10,14 @@ const ThreadRecSchema = new Schema({
     },
     thread_tags_id: String,
     thread_hashtags_id: String,
+    thread_mood: {
+        sadness: Number,
+        fear: Number,
+        anger: Number, 
+        love: Number, 
+        joy: Number, 
+        surprise: Number
+    },
     user_thread_durations_id: String,
     user_thread_replies_id: String, //number of times replied
     user_thread_votes_id: String //number of times voted
@@ -23,6 +31,14 @@ const UserRecSchema = new Schema({
     },
     user_tags_id: String,
     user_hashtags_id: String,
+    thread_mood_24hr: {
+        sadness: Number,
+        fear: Number,
+        anger: Number, 
+        love: Number, 
+        joy: Number, 
+        surprise: Number
+    },
     user_thread_durations_id: String,
     user_thread_replies_id: String, //number of times replied
     user_thread_votes_id: String, //number of times voted
