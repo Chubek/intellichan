@@ -12,6 +12,10 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    date_registered: {
+        type: Date,
+        default: Date.now
+    },
     info_id: String,
     permission_id: String,
     transactions_id: [String],
@@ -62,10 +66,7 @@ const UserInfoSchema = new Schema({
         type: Number,
         default: 0
     },
-    date_registered: {
-        type: Date,
-        default: Date.now
-    }
+
 
 })
 
@@ -132,16 +133,21 @@ const UserTransactionsSchema = new Schema({
 const UserBannedSchema = new Schema({
     user_id: {
         type: String,
-        required: true
+        required: true,
+        unique: true
+    },     
+    date_started: {
+        type: Date,
+        default: Date.now
     },
-    is_active: {
-        type: Boolean,
-        default: false
-    },
-    date_started: Date,
-    date_ended: Date
+    date_ends: {
+        type: Date
+    }
 })
 
+const BannedUsers = new Schema({
+
+})
 
 const User = mongoose.model("User", UserSchema)
 const UserTransaction = mongoose.model("UserTransacion", UserTransactionsSchema)

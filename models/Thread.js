@@ -27,7 +27,9 @@ const ImageOPSchema = new Schema({
     hidden_id: String,
     promoted_id: String,
     watched_id: [String],
-    sent_ip: String
+    sent_ip: String,
+    poll_id: String
+    
 
 })
 
@@ -57,7 +59,8 @@ const VideoOPSchema = new Schema({
     hidden_id: String,
     promoted_id: String,
     watched_id: [String],
-    sent_ip: String
+    sent_ip: String,
+    poll_id: String
 
 })
 
@@ -87,7 +90,8 @@ const AudioOPSchema = new Schema({
     hidden_id: String,
     promoted_id: String,
     watched_id: [String],
-    sent_ip: String
+    sent_ip: String,
+    poll_id: String
 
 })
 

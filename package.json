@@ -30,7 +30,8 @@
     "mongoose": "^5.8.12",
     "mongoose-slug-generator": "^1.0.4",
     "nodemailer": "^6.4.2",
-    "underscore": "^1.9.2"
+    "underscore": "^1.9.2",
+    "underscore.date": "^0.6.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

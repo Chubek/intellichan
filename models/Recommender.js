@@ -10,7 +10,8 @@ const ThreadRecSchema = new Schema({
     },
     thread_tags_id: String,
     thread_hashtags_id: String,
-    thread_mood: {
+    thread_location_id: String,
+    thread_mood_percentage: {
         sadness: Number,
         fear: Number,
         anger: Number, 
@@ -21,6 +22,7 @@ const ThreadRecSchema = new Schema({
     user_thread_durations_id: String,
     user_thread_replies_id: String, //number of times replied
     user_thread_votes_id: String //number of times voted
+
 })
 
 const UserRecSchema = new Schema({
@@ -31,14 +33,8 @@ const UserRecSchema = new Schema({
     },
     user_tags_id: String,
     user_hashtags_id: String,
-    thread_mood_24hr: {
-        sadness: Number,
-        fear: Number,
-        anger: Number, 
-        love: Number, 
-        joy: Number, 
-        surprise: Number
-    },
+    user_mood_selected: String,
+    user_mood_calculated: String,    
     user_thread_durations_id: String,
     user_thread_replies_id: String, //number of times replied
     user_thread_votes_id: String, //number of times voted
@@ -67,6 +63,14 @@ const HashtagIdSchema = new Schema({
     }
 })
 
+const ThreadLocationSchema = new Schema({
+    thread_rec_id: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    location: String
+})
 
 const UserTagSchema = new Schema({
     user_rec_id: {
@@ -174,6 +178,8 @@ const ViewedThreadSchema = new Schema({
 
 })
 
+
+
 const ViewedThread = mongoose.model("ViewedThread", ViewedThreadSchema)
 const UserThreadReplies = mongoose.model("UserThreadReplies", UserThreadRepliesSchema)
 const UserThreadVote = mongoose.model("UserThreadVote", UserThreadVoteSchema)
@@ -186,6 +192,7 @@ const HashtagId = mongoose.model("HashtagId", HashtagIdSchema)
 const TagId = mongoose.model("TagId", TagIdSchema)
 const UserRec = mongoose.model("UserRec", UserRecSchema)
 const ThreadRec = mongoose.model("ThreadRec", ThreadRecSchema)
+const ThreadLocation = mongoose.model("ThreadLocation", ThreadLocationSchema)
 
 module.exports = {
     ViewedThread,
@@ -200,5 +207,6 @@ module.exports = {
     HashtagId,
     TagId,
     UserRec,
-    ThreadRec
+    ThreadRec,
+    ThreadLocation
 }
