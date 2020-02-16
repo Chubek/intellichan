@@ -26,7 +26,8 @@ const ImageOPSchema = new Schema({
     spam_ham_id: String,
     hidden_id: String,
     promoted_id: String,
-    watched_id: [String]
+    watched_id: [String],
+    sent_ip: String
 
 })
 
@@ -55,7 +56,8 @@ const VideoOPSchema = new Schema({
     spam_ham_id: String,
     hidden_id: String,
     promoted_id: String,
-    watched_id: [String]
+    watched_id: [String],
+    sent_ip: String
 
 })
 
@@ -84,7 +86,8 @@ const AudioOPSchema = new Schema({
     spam_ham_id: String,
     hidden_id: String,
     promoted_id: String,
-    watched_id: [String]
+    watched_id: [String],
+    sent_ip: String
 
 })
 
@@ -111,7 +114,8 @@ const AnonymousOPSchema = new Schema({
     cert_id: String,
     spam_ham_id: String,
     hidden_id: String,
-    watched_id: [String]
+    watched_id: [String],
+    sent_ip: String
 })
 
 
@@ -143,7 +147,8 @@ const AnonymousReplySchema = new Schema({
     votes_id: String,
     cert_id: String,
     spam_ham_id: String,
-    hidden_id: String
+    hidden_id: String,
+    sent_ip: String
 
 })
 
@@ -173,7 +178,8 @@ const ImageReplySchema = new Schema({
     votes_id: String,
     cert_id: String,
     spam_ham_id: String,
-    hidden_id: String
+    hidden_id: String,
+    sent_ip: String
 })
 
 
@@ -202,7 +208,8 @@ const VideoReplySchema = new Schema({
     votes_id: String,
     cert_id: String,
     spam_ham_id: String,
-    hidden_id: String
+    hidden_id: String,
+    sent_ip: String
 })
 
 
@@ -231,7 +238,8 @@ const AudioReplySchema = new Schema({
     votes_id: String,
     cert_id: String,
     spam_ham_id: String,
-    hidden_id: String
+    hidden_id: String,
+    sent_ip: String
 })
 
 const PostContentSchema = new Schema({

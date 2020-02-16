@@ -1,3 +1,4 @@
+require('dotenv').config({path: __dirname + '/.env'})
 const UserSchema = require("../models/User").User
 const UserInfoSchema = require('../models/User').UserInfo
 const UserPermissionSchema = require("../models/User").UserPermission
@@ -8,6 +9,8 @@ const router = require("express").Router()
 const auth = require("../middleware/auth")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const _ = require("underscore")
+const SALT_ROUNDS = 12
 
 //USER -> GETs
 
@@ -202,7 +205,60 @@ router.get('/get-banned-status/:uid', auth, (req, res) => {
 })
 
 
+
 //USER -> POSTs
+
+// @route   POST /user/create/
+// @desc    Get user banned status
+// @access  Public
+router.post('/create', (req, res) => {
+    const {displayName, email, password} = req.body
+
+    if (!displayName || !password) {
+        console.log(req.body)
+        res.status(401).json("Error: enter password and/or display name.")
+        return
+    }
+ 
+   UserSchema.findOne({display_name: displayName})
+        .then(user => {
+            if (user) {
+                res.status(401).json({message: "User already exists."})
+                return false
+            } else {
+                bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
+                    if (err) throw err
+                
+                    const User = new UserSchema({
+                        display_name: displayName,
+                        password: hash,
+                        email: email
+                
+                    })
+                        
+                    User.save()
+                        .then(doc_saved => {
+                            token = jwt.sign({
+                                data: {id: doc_saved._id, display_name: doc_saved.display_name},
+                              }, process.env.JWT_SECRET, { expiresIn: '15d' })
+                            res.status(201).json({jwt_token: token, doc_saved})})
+                                .catch(e => {
+                                    res.status(500).json({ e })
+                                    console.log(e)
+                                })
+                    }) 
+            }
+        })
+            .catch(e => console.log(e))
+
+  
+    
+            
+   
+    
+    
+})
+
 
 //USER -> PUTs
 

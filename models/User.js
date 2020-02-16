@@ -7,6 +7,11 @@ const UserSchema = new Schema({
         required: true,
         unique: true
     },
+    email: String,
+    password: {
+        type: String,
+        required: true
+    },
     info_id: String,
     permission_id: String,
     transactions_id: [String],
@@ -18,7 +23,9 @@ const UserSchema = new Schema({
     cert_id: String,
     payment_id: String,
     promotions_id: String,
-    watcher_id: String
+    watcher_id: String,
+    sent_ips: [String],
+    last_ip: String
     
 
 })
