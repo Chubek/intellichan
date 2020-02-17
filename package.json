@@ -15,7 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@tensorflow/tfjs": "^1.5.2",
-    "bcryptjs": "^2.4.3",
+    "bcrypt": "^3.0.8",
     "body-parser": "^1.19.0",
     "colors": "^1.4.0",
     "compression": "^1.7.4",
@@ -27,9 +27,11 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.1.6",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
     "mongoose": "^5.8.12",
     "mongoose-slug-generator": "^1.0.4",
     "nodemailer": "^6.4.2",
+    "randomatic": "^3.1.1",
     "underscore": "^1.9.2",
     "underscore.date": "^0.6.1"
   },

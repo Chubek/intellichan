@@ -5,7 +5,8 @@ const UserSchema = new Schema({
     display_name: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        maxlength: 20
     },
     email: String,
     password: {
@@ -29,7 +30,8 @@ const UserSchema = new Schema({
     promotions_id: String,
     watcher_id: String,
     sent_ips: [String],
-    last_ip: String
+    last_ip: String,
+    tripcodes_id: [String]
     
 
 })
@@ -103,10 +105,6 @@ const UserVIPSchema = new Schema({
         type: String,
         required: true,
     },
-    is_active: {
-        type: Boolean,
-        default: false
-    },
     date_subscribed: Date,
     date_ends: Date,
     transaction_id: String
@@ -136,18 +134,21 @@ const UserBannedSchema = new Schema({
         required: true,
         unique: true
     },     
-    date_started: {
-        type: Date,
-        default: Date.now
-    },
     date_ends: {
         type: Date
     }
 })
 
-const BannedUsers = new Schema({
-
+const UserTripcodeSchema = new Schema({
+    user_id: {
+        type: String,
+        required: true,
+    },
+    password: String,
+    seed: String,
+    trip: String,
 })
+
 
 const User = mongoose.model("User", UserSchema)
 const UserTransaction = mongoose.model("UserTransacion", UserTransactionsSchema)
@@ -155,7 +156,7 @@ const UserVIP = mongoose.model("UserGold", UserVIPSchema)
 const UserPermission = mongoose.model("UserPermission", UserPermissionSchema)
 const UserInfo = mongoose.model("UserInfo", UserInfoSchema)
 const UserBanned = mongoose.model("UserBanned", UserBannedSchema)
-
+const UserTricode = mongoose.model("UserTripcode", UserTripcodeSchema)
 
 
 module.exports = {User,
@@ -163,4 +164,6 @@ module.exports = {User,
                     UserVIP,
                     UserPermission,
                     UserInfo,
-                    UserBanned}
+                    UserBanned,
+                    UserTricode
+                }

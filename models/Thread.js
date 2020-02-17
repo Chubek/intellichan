@@ -103,8 +103,14 @@ const AnonymousOPSchema = new Schema({
     },
     submitter_id: String,
     submitter_name: {
-        type: String,
-        default: "Anonymous"
+        name_field: {
+            type: String,
+            default: "Anonymous"
+        },
+        tripcode: {
+            type: String,
+            default: ''
+        }
     },
     image_id: String,
     content_id: String,
@@ -139,8 +145,14 @@ const AnonymousReplySchema = new Schema({
 
     },
     submitter_name: {
-        type: String,
-        default: "Anonymous"
+        name_field: {
+            type: String,
+            default: "Anonymous"
+        },
+        tripcode: {
+            type: String,
+            default: ''
+        }
     },
     image_id: String,
     content_id: String,

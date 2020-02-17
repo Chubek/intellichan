@@ -75,6 +75,8 @@ const UserPromotionSchema = new Schema({
     transactions_id: [String]
 })
 
+
+
 const PromotionTransaction = mongoose.model("PromotionTransaction", PromotionTransactionSchema)
 const BronzePromotion = mongoose.model("BronzePromotion", BronzePromotionSchema)
 const GoldPromotion = mongoose.model("GoldPromotion", GoldPromotionSchema)

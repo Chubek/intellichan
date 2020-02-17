@@ -3,6 +3,7 @@ const mongoose = require("mongoose")
 require("colors")
 const express = require("express")
 
+mongoose.set('useFindAndModify', false)
 
 const app = express()
 

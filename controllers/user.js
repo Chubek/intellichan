@@ -7,10 +7,10 @@ const UserTransactionSchema = require("../models/User").UserTransaction
 const UserBannedSchema = require("../models/User").UserBanned
 const router = require("express").Router()
 const auth = require("../middleware/auth")
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const _ = require("underscore")
-var _date = require('underscore.date');
+const moment = require("moment")
 const SALT_ROUNDS = 12
 
 //USER -> GETs
@@ -52,11 +52,10 @@ router.get('/:uid', (req, res) => {
 // @route   GET /user/info/:uid
 // @desc    Get user info based on id
 // @access  Public
-router.get('/info/:infoid', auth, (req, res) => {
-    const userId = req.user.id
-    const infoId = req.params.infoid
+router.get('/info/:uid', auth, (req, res) => {
+    const userId = req.params.uid
 
-    UserInfoSchema.findOne({_id: infoId, user_id: userId})
+    UserInfoSchema.findOne({user_id: userId})
         .then(doc => {
             res.status(200).json({ bio: doc.bio, pages: doc.pages, gamertags: doc.gamertags, 
                         number_of_posts: doc.number_of_posts, date_registered: doc.date_registered })
@@ -68,22 +67,27 @@ router.get('/info/:infoid', auth, (req, res) => {
 
 })
 
-// @route   GET /user/permission/permissionid
+// @route   GET /user/permission/:uid
 // @desc    Get user info based on id
 // @access  Private
-router.get('/permission/:permissionid', auth, (req, res) => {
-    const userId = req.user.id
-    const permissionId = req.params.permissionid
+router.get('/permission/:uid', auth, (req, res) => {
+    const authId = req.user.id
+    const userId = req.params.uid
 
-    UserPermissionSchema.findOne({_id: permissionId, user_id: userId})
-        .then(doc => {
-            res.status(200).json({doc})
+    UserPermissionSchema.findOne({user_id: authId})
+        .then(perm_doc => {
+            if (perm_doc.is_admin || perm_doc.is_janitor || perm_doc.is_mod) {
+                UserPermissionSchema.findOne({user_id: userId})
+                    .then(doc => {
+                             res.status(200).json({doc})
+                                     })
+                         .catch(e => {
+                                res.status(500).json({ e })
+                                console.log(e)
+                                    })
+
+            }
         })
-            .catch(e => {
-                res.status(500).json({ e })
-                console.log(e)
-            })
-
 
 })
 
@@ -94,63 +98,39 @@ router.get('/get-vip-status/:uid', auth, (req, res) => {
     const authId = req.user.id
     const userId = req.params.uid
 
-    UserPermissionSchema.find({user_id: authId})
-        .then(auth_doc => {
-            if (auth_doc.is_admin || auth_doc.is_janitor || auth_doc.is_mod) {
-                UserSchema.findOne({_id: userId})
-        .then(doc_user => {
-            const permissionId = doc_user.permission_id
-            UserPermissionSchema.find({_id: permissionId, user_id: userId})
-                .then(doc_permission => {
-                    const vipId = doc_permission.vip_id
+   UserPermissionSchema.findOne({user_id: authId})
+    .then(auth_perm_doc => {
+        if (auth_perm_doc.is_mod || auth_perm_doc.is_admin) {
+            UserPermissionSchema.findOne({user_id: userId})
+                .then(user_perm_doc => {
+                    UserVIPSchema.find({_id: {$in: user_perm_doc.vip_id, user_id: userId}})
+                        .then(vip_docs => {
+                            const today = new Date()
+                            let active = []
+                            vip_docs.forEach(vip => {
+                                if (vip.date_ends > today) {
+                                    active.push(vip)
+                                }
+                            })
 
-                   UserVIPSchema.find({_id: {$all: vipId}, user_id: userId})
-                        .then(doc_vip => {
-                                  
-                            doc_vip.forEach(doc => {
-                                ret = []
-                                if (doc.is_active) {
-                                          ret.push(doc)
-                                    } 
-
-                                    if (ret.length > 0) {
-                                        res.status(200).json({ret})
-                                    } else {
-                                        res.status(404)
-                                        console.log("No active VIP subscriptions.")
-                                    }
+                            res.status(200).json({active_vips: active})
+                            
                         })
-                    })
-                    .catch(e => {
-                        res.status(500).json({e})
-                        console.log(e)
-                    })
-                        .catch(e => {
-                            res.status(500).json({e})
-                            console.log(e)
-                        })
-                    
+                            .catch(e => {
+                                res.status(500).json({ e })
+                                console.log(e)
+                            })
                 })
                 .catch(e => {
-                    res.status(500).json({e})
+                    res.status(500).json({ e })
                     console.log(e)
                 })
-        })
-        .catch(e => {
-            res.status(500).json({e})
-            console.log(e)
-        })
-
-            }
-        })
-        .catch(e => {
-            res.status(200).json({ e })
-            console.log(e)
-        })
-
-
-
-
+        }
+    })
+    .catch(e => {
+        res.status(500).json({ e })
+        console.log(e)
+    })
 })
 
 // @route   GET /user/get-transactions/:trid
@@ -186,7 +166,13 @@ router.get('/get-banned-status/:uid', auth, (req, res) => {
 
                         UserBannedSchema.find({_id: bannedId, user_id: userId})
                             .then(banned_doc => {
-                                res.status(200).json({banned_doc})
+                                const today = new Date()
+
+                                if (banned_doc.date_ends > today) {
+                                    res.status(200).json({banned: false})
+                                } else {
+                                    res.status(200).json({banned: true})
+                                }
                             })
                             .catch(e => {
                                 res.status(500).json({ e })
@@ -212,7 +198,7 @@ router.get('/get-banned-status/:uid', auth, (req, res) => {
 // @route   POST /user/create/
 // @desc    Register user
 // @access  Public
-router.post('/create-normal', (req, res) => {
+router.post('/create', (req, res) => {
     const {displayName, email, password} = req.body
 
     if (!displayName || !email || !password) {
@@ -247,7 +233,8 @@ router.post('/create-normal', (req, res) => {
                                             token = jwt.sign({
                                                 data: {id: doc_saved._id, display_name: doc_saved.display_name},
                                               }, process.env.JWT_SECRET, { expiresIn: '15d' })
-                                            res.status(201).json({jwt_token: token, user: 
+                                              UserSchema.updateOne({_id: doc_saved}, {$setOnInsert: {permission_id: perm_doc._id}}, {upsert: true})
+                                            res.status(201).json({token: token, user: 
                                                 {
                                                     id: doc_saved._id,
                                                     displayName: doc_saved.display_name,
@@ -290,10 +277,12 @@ router.post('/auth', (req, res) => {
                         res.status(403).json({message: "Access denied, passwords don't match!"})
                         return false
                     } else {
-                        const token = jwt.sign({data: {id: doc_user._id, 
-                            displayName: doc_user.display_name, 
-                            email: doc_user.email}}, process.env.JWT_SECRET, {expiresIn: '15d'})
-                            res.status(202).json({jwt_token: token, user: {
+                        const token = jwt.sign({
+                            data: {id: doc_user._id, 
+                            displayName: doc_user.display_name    
+                        }}, 
+                            process.env.JWT_SECRET, {expiresIn: '15d'})
+                            res.status(202).json({token: token, user: {
                                 id: doc_user._id,
                                 displayName: doc_user.display_name,
                                 email: doc_user.email,
@@ -321,10 +310,65 @@ router.post('/auth', (req, res) => {
 }) 
 
 
-// @route   PUT /user/create-user-info/
+
+
+
+
+//USER -> PUTs
+
+
+
+// @route   PUT /user/set-user-banned/:uid
+// @desc    Set user banned
+// @access  Private
+router.put('/set-banned/:uid', auth, (req, res) => {
+    const authId = req.user.id
+    const userId = req.params.uid
+    let banEndDate = 0
+    if (req.body.days > 0) {
+        banEndDate = moment(new Date()).add(req.body.days, 'days') 
+    } else {
+        banEndDate = -1
+    } 
+
+    UserPermissionSchema.findOne({user_id: authId})
+        .then(perm_doc => {
+            
+            if (perm_doc.is_admin || perm_doc.is_mod) {
+                UserBannedSchema.findOneAndUpdate({user_id: userId}, {$setOnInsert: {date_ends: banEndDate}}, {upsert: true, setDefaultsOnInsert: true, new: true})
+                    .then(ban_doc => {
+                        
+                        UserSchema.findOneAndUpdate({_id: userId}, {$set: {banned_id: ban_doc._id}}, {upsert: true, setDefaultsOnInsert: true, new: true})
+                            .then(user_doc => {
+                                
+                                res.status(200).json({message: `User ${user_doc._id} banned for ${req.body.days} day(s) and it will expire on ${ban_doc.date_ends}. His ban Id is ${ban_doc._id}. It was inserted into the user's schema as ${user_doc.banned_id}`, 
+                                    ban_doc})
+                            })
+                                .catch(e => {
+                                    res.status(500).json({ e })
+                                    console.log(e)
+                                })
+                    })
+                    .catch(e => {
+                        res.status(500).json({ e })
+                        console.log(e)
+                    })
+            } else {
+                res.status(403).json({message:"Must be admin or mod to ban."})
+                console.log("Must be admin to ban.")
+            }
+        })
+        .catch(e => {
+            res.status(500).json({ e })
+            console.log(e)
+        })
+})
+
+
+// @route   PUT /user/set-info/
 // @desc    Create user info
 // @access  Private
-router.post('/create-user-info', auth, (req, res) => {
+router.put('/set-info', auth, (req, res) => {
     const userId = req.user.id
 
     const {bio, pages, gamerTags} = req.body
@@ -358,68 +402,28 @@ router.post('/create-user-info', auth, (req, res) => {
     })
   
     if (!_.includes(bioCheckArr, false), !_.includes(pagesCheckArr, false), !_.includes(gamerTagsCheckArr, false)) {
-        const UserInfo = new UserInfoSchema({
-            user_id: userId,
+        
+        UserInfoSchema.updateOne({user_id: userId}, {$setOnInsert: {
             bio: bio,
             pages: pages,
             gamertags: gamerTags
-        })
-
-        UserInfo.save()
+        }}, {upsert: true})
             .then(doc => {
-                res.status(201).json({message: "Created!", doc})
-                UserSchema.updateOne({_id: userId}, {$setOnInsert: {info_id: doc._id}}, {upsert: true})
-            })
-                .catch(e => {
-                    res.status(500).json({ e })
-                    console.log(e)
-                })
-    }
-})
-
-
-
-//USER -> PUTs
-
-
-
-// @route   PUT /user/set-user-banned/:uid
-// @desc    Set user banned
-// @access  Private
-router.put('set-user-banned/:uid', auth, (req, res) => {
-    const authId = req.user.id
-    const userId = req.params.uid
-    const ban_end_date = _date(new Date()).add({d: req.body.days}) 
-    
-    UserPermissionSchema.find({user_id: authId})
-        .then(perm_doc => {
-            if (perm_doc.is_admin || perm_doc.is_mod) {
-                UserBannedSchema.updateOne({user_id: userId}, {$setOnInsert: {date_ends: ban_end_date}}, {upsert: true})
-                    .then(ban_doc => {
-                        UserSchema.updateOne({_id: userId}, {$setOnInsert: {banned_id: ban_doc._id}}, {upsert: true})
-                            .then(() => {
-                                res.status(200).json({message: `User ${userId} banned for ${ban_days} day(s). His ban Id is ${ban_doc._id}.`})
-                            })
-                                .catch(e => {
-                                    res.status(500).json({ e })
-                                    console.log(e)
-                                })
-                    })
+                UserSchema.update({_id: userId}, {info_id: doc._id})
                     .catch(e => {
                         res.status(500).json({ e })
                         console.log(e)
                     })
-            }
-        })
-        .catch(e => {
-            res.status(500).json({ e })
-            console.log(e)
-        })
+            })
+            .catch(e => {
+                res.status(500).json({ e })
+                console.log(e)
+            })
+    
+    }
 })
-
-
 
 //USER ->  DELs
 
 
-module.exports = router
+module.exports = router 
