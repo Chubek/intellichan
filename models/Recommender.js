@@ -19,6 +19,7 @@ const ThreadRecSchema = new Schema({
         joy: Number, 
         surprise: Number
     },
+    post_category: String,
     user_thread_durations_id: String,
     user_thread_replies_id: String, //number of times replied
     user_thread_votes_id: String //number of times voted

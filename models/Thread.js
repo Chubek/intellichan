@@ -13,7 +13,7 @@ const ImageOPSchema = new Schema({
 
     },
     submitter_name: String,
-    images_id: [String],
+    image_id: String,
     content_id: String,
     meta_rec_id: String, //recommender system stuff
     date_submitted: {
@@ -268,7 +268,7 @@ const PostContentSchema = new Schema({
         type: String,
         default: ''
     },
-    body: String,
+    message: String,
 
 })
 
@@ -303,9 +303,9 @@ const HiddenPostSchema = new Schema({
 })
 
 const PostContent = mongoose.model("PostContent", PostContentSchema)
-const ImageReply = mongoose.model("ThreadReply", ImageReplySchema)
-const VideoReply = mongoose.model("ThreadReply", VideoReplySchema)
-const AudioReply = mongoose.model("ThreadReply", AudioReplySchema)
+const ImageReply = mongoose.model("ImageReply", ImageReplySchema)
+const VideoReply = mongoose.model("VideoReply", VideoReplySchema)
+const AudioReply = mongoose.model("AudioReply", AudioReplySchema)
 const AnonymousReply = mongoose.model("AnonymousReply", AnonymousReplySchema)
 const AnonymousOP = mongoose.model("AnonymousOP", AnonymousOPSchema)
 const VideoOP = mongoose.model("VideoOP", VideoOPSchema)

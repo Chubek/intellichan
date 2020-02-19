@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "nodemon server.js"
+    "serve": "nodemon server.js",
+    "debug": "DEBUG=* node server.js"
   },
   "repository": {
     "type": "git",
@@ -24,14 +25,20 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
+    "exif": "^0.6.0",
+    "exif-reader": "^1.0.3",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.6",
+    "file-to-array-buffer": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "mongoose": "^5.8.12",
     "mongoose-slug-generator": "^1.0.4",
+    "morgan": "^1.9.1",
+    "music-metadata": "^6.3.3",
     "nodemailer": "^6.4.2",
     "randomatic": "^3.1.1",
+    "sha256-file": "^1.0.0",
     "underscore": "^1.9.2",
     "underscore.date": "^0.6.1"
   },

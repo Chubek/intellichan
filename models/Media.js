@@ -31,6 +31,7 @@ const ImageMetadataSchema = new Schema({
     sha256: String,
     type: String,
     mime_type: String,
+    size: Number,  
     exif_data: { 
         image: 
             { Make: String,
@@ -149,6 +150,7 @@ const AudioMetadataSchema = new Schema({
     sha256: String,
     type: String,
     mime_type: String,
+    size: Number,
     tags: {
         format: {
             container: String,
@@ -218,6 +220,7 @@ const VideoMetadataSchema = new Schema({
     sha256: String,
     type: String,
     mime_type: String,
+    size: Number,
     duration: mongoose.Types.Decimal128
 
 })

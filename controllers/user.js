@@ -6,7 +6,7 @@ const UserVIPSchema = require("../models/User").UserVIP
 const UserTransactionSchema = require("../models/User").UserTransaction
 const UserBannedSchema = require("../models/User").UserBanned
 const router = require("express").Router()
-const auth = require("../middleware/auth")
+const components = require("../middleware/components")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const _ = require("underscore")
@@ -43,7 +43,7 @@ router.get('/:uid', (req, res) => {
             res.status(200).json(doc)
         })
             .catch(e => {
-                res.status(500).json({error: e})
+                res.status(500).json({e})
                 console.log(e)
             })
 
@@ -52,7 +52,7 @@ router.get('/:uid', (req, res) => {
 // @route   GET /user/info/:uid
 // @desc    Get user info based on id
 // @access  Public
-router.get('/info/:uid', auth, (req, res) => {
+router.get('/info/:uid', components.auth, (req, res) => {
     const userId = req.params.uid
 
     UserInfoSchema.findOne({user_id: userId})
@@ -61,7 +61,7 @@ router.get('/info/:uid', auth, (req, res) => {
                         number_of_posts: doc.number_of_posts, date_registered: doc.date_registered })
         })
             .catch(e => {
-                res.status(500).json({error: e})
+                res.status(500).json({e})
                 console.log(e)
             })
 
@@ -70,7 +70,7 @@ router.get('/info/:uid', auth, (req, res) => {
 // @route   GET /user/permission/:uid
 // @desc    Get user info based on id
 // @access  Private
-router.get('/permission/:uid', auth, (req, res) => {
+router.get('/permission/:uid', components.auth, (req, res) => {
     const authId = req.user.id
     const userId = req.params.uid
 
@@ -94,7 +94,7 @@ router.get('/permission/:uid', auth, (req, res) => {
 // @route   GET /user/get-vip-status/:uid
 // @desc    Get user info based on id
 // @access  Private
-router.get('/get-vip-status/:uid', auth, (req, res) => {
+router.get('/get/vip-status/:uid', components.auth, (req, res) => {
     const authId = req.user.id
     const userId = req.params.uid
 
@@ -136,7 +136,7 @@ router.get('/get-vip-status/:uid', auth, (req, res) => {
 // @route   GET /user/get-transactions/:trid
 // @desc    Get user info based on id
 // @access  Private
-router.get('/get-transaction/:trid', auth, (req, res) => {
+router.get('/get/transaction/:trid', components.auth, (req, res) => {
     const userId = req.user.id
     const transactionId = req.query.trid
 
@@ -153,7 +153,7 @@ router.get('/get-transaction/:trid', auth, (req, res) => {
 // @route   GET /user/get-banned-status/:uid
 // @desc    Get user banned status
 // @access  Private
-router.get('/get-banned-status/:uid', auth, (req, res) => {
+router.get('/get/banned-status/:uid', components.auth, (req, res) => {
     const authId = req.user.id
     const userId = req.params.uid
 
@@ -231,7 +231,7 @@ router.post('/create', (req, res) => {
                                     UserPermission.save()
                                         .then(perm_doc => {
                                             token = jwt.sign({
-                                                data: {id: doc_saved._id, display_name: doc_saved.display_name},
+                                                data: {id: doc_saved._id, displayName: doc_saved.display_name},
                                               }, process.env.JWT_SECRET, { expiresIn: '15d' })
                                               UserSchema.updateOne({_id: doc_saved}, {$setOnInsert: {permission_id: perm_doc._id}}, {upsert: true})
                                             res.status(201).json({token: token, user: 
@@ -272,41 +272,49 @@ router.post('/auth', (req, res) => {
             }
 
             bcrypt.compare(password, doc_user.password)
-                .then(is_match => {
-                    if (!is_match) {
-                        res.status(403).json({message: "Access denied, passwords don't match!"})
-                        return false
-                    } else {
-                        const token = jwt.sign({
-                            data: {id: doc_user._id, 
-                            displayName: doc_user.display_name    
-                        }}, 
-                            process.env.JWT_SECRET, {expiresIn: '15d'})
-                            res.status(202).json({token: token, user: {
-                                id: doc_user._id,
-                                displayName: doc_user.display_name,
-                                email: doc_user.email,
-                                props: {
-                                    dateRegistered: doc_user.date_registered,
-                                    infoId: doc_user.info_id,
-                                    permissionId: doc_user.permission_id,
-                                    transactionsId: doc_user.transactions_id,
-                                    recommenderId: doc_user.recommender_id,
-                                    votesId: doc_user.votes_id,
-                                    usersSubbed: doc_user.users_subbed,
-                                    subbedUsers: doc_user.subbed_users,
-                                    certId: doc_user.cert_id,
-                                    paymentId: doc_user.payment_id,
-                                    promotionsId: doc_user.promotions_id,
-                                    watcherId: doc_user.watcher_id,
-                                    sentIps: doc_user.sent_ips,
-                                    
-                                },
-                                lastIp: doc_user.last_ip
-                            }})
+            .then(isMatch => {
+                if (!isMatch) return res.status(400).json( { message: "Invalid password." })
+
+                jwt.sign( {data: {id: doc_user._id, 
+                    displayName: doc_user.display_name    
+                }}, process.env.JWT_SECRET, { expiresIn: '15d'}, (err, token) => {
+                    if (err) throw err
+                    
+                    res.status(202).json({token: token, user: {
+                        id: doc_user._id,
+                        displayName: doc_user.display_name,
+                        email: doc_user.email,
+                        props: {
+                            dateRegistered: doc_user.date_registered,
+                            infoId: doc_user.info_id,
+                            permissionId: doc_user.permission_id,
+                            transactionsId: doc_user.transactions_id,
+                            recommenderId: doc_user.recommender_id,
+                            votesId: doc_user.votes_id,
+                            usersSubbed: doc_user.users_subbed,
+                            subbedUsers: doc_user.subbed_users,
+                            certId: doc_user.cert_id,
+                            paymentId: doc_user.payment_id,
+                            promotionsId: doc_user.promotions_id,
+                            watcherId: doc_user.watcher_id,
+                            sentIps: doc_user.sent_ips,
+                            
+                        },
+                        lastIp: doc_user.last_ip 
                     }
                 })
-        })
+                })
+            })
+
+                .catch(e => {
+                    res.status(500).json({ e })
+                    console.log(e)
+                })
+            })
+            .catch(e => {
+                res.status(500).json({ e })
+                console.log(e)
+            })
 }) 
 
 
@@ -321,7 +329,7 @@ router.post('/auth', (req, res) => {
 // @route   PUT /user/set-user-banned/:uid
 // @desc    Set user banned
 // @access  Private
-router.put('/set-banned/:uid', auth, (req, res) => {
+router.put('/set/banned/:uid', components.auth, (req, res) => {
     const authId = req.user.id
     const userId = req.params.uid
     let banEndDate = 0
@@ -368,7 +376,7 @@ router.put('/set-banned/:uid', auth, (req, res) => {
 // @route   PUT /user/set-info/
 // @desc    Create user info
 // @access  Private
-router.put('/set-info', auth, (req, res) => {
+router.put('/set/info', components.auth, (req, res) => {
     const userId = req.user.id
 
     const {bio, pages, gamerTags} = req.body
@@ -422,8 +430,56 @@ router.put('/set-info', auth, (req, res) => {
     
     }
 })
+ 
+
+
 
 //USER ->  DELs
 
+// @route   DELETE /user/delete-admin/:uid
+// @desc    Create user info
+// @access  Private
+router.delete('/delete/admin/:uid', components.auth, (req, res) => {
+    const userId = req.params.uid
+    const authId = req.user.id
 
-module.exports = router 
+    UserPermissionSchema.findOne({_id: authId})
+        .then(auth_doc => {
+            if (auth_doc.is_admin || auth_doc.is_mod) {
+                UserSchema.findOneAndDelete({_id: userId})
+                    .then(() => res.status(200).json({ message: `User ${userId} deleted.`}))
+                        .catch(e => {
+                            res.status(500).json({ e })
+                            console.log(e)
+                        })
+            }
+        })
+        .catch(e => {
+            res.status(500).json({ e })
+            console.log(e)
+        })
+    
+})
+
+// @route   DELETE /user/delete-normal/
+// @desc    Create user as ad,om
+// @access  Private
+router.delete('/delete/normal', components.auth, (req, res) => {
+    const userId = req.user.id
+
+    UserSchema.findOneAndDelete({_id: userId})
+        .then(doc => {
+            res.status(200).json({ doc})
+        })
+            .catch(e => {
+                res.status(500).json( { e })
+                console.log(e)
+            }
+
+
+            )
+})
+
+
+
+module.exports = router
