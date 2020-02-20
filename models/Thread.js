@@ -28,7 +28,8 @@ const ImageOPSchema = new Schema({
     promoted_id: String,
     watched_id: [String],
     sent_ip: String,
-    poll_id: String
+    poll_id: String,
+    edited_id: [String]
     
 
 })
@@ -60,7 +61,8 @@ const VideoOPSchema = new Schema({
     promoted_id: String,
     watched_id: [String],
     sent_ip: String,
-    poll_id: String
+    poll_id: String,
+    edited_id: [String]
 
 })
 
@@ -91,7 +93,8 @@ const AudioOPSchema = new Schema({
     promoted_id: String,
     watched_id: [String],
     sent_ip: String,
-    poll_id: String
+    poll_id: String,
+    edited_id: [String]
 
 })
 
@@ -125,7 +128,8 @@ const AnonymousOPSchema = new Schema({
     spam_ham_id: String,
     hidden_id: String,
     watched_id: [String],
-    sent_ip: String
+    sent_ip: String,
+    edited_id: [String]
 })
 
 
@@ -164,7 +168,8 @@ const AnonymousReplySchema = new Schema({
     cert_id: String,
     spam_ham_id: String,
     hidden_id: String,
-    sent_ip: String
+    sent_ip: String,
+    edited_id: [String]
 
 })
 
@@ -195,7 +200,8 @@ const ImageReplySchema = new Schema({
     cert_id: String,
     spam_ham_id: String,
     hidden_id: String,
-    sent_ip: String
+    sent_ip: String,
+    edited_id: [String]
 })
 
 
@@ -225,7 +231,8 @@ const VideoReplySchema = new Schema({
     cert_id: String,
     spam_ham_id: String,
     hidden_id: String,
-    sent_ip: String
+    sent_ip: String,
+    edited_id: [String]
 })
 
 
@@ -255,7 +262,8 @@ const AudioReplySchema = new Schema({
     cert_id: String,
     spam_ham_id: String,
     hidden_id: String,
-    sent_ip: String
+    sent_ip: String,
+    edited_id: [String]
 })
 
 const PostContentSchema = new Schema({
@@ -302,6 +310,19 @@ const HiddenPostSchema = new Schema({
     }
 })
 
+const EditedPostSchema = new Schema({
+    post_id: {
+        type: String,
+        required: true
+    },
+    string_difference: String,
+    edited_at: {
+        type: Date,
+        default: Date.now
+    }
+})
+
+
 const PostContent = mongoose.model("PostContent", PostContentSchema)
 const ImageReply = mongoose.model("ImageReply", ImageReplySchema)
 const VideoReply = mongoose.model("VideoReply", VideoReplySchema)
@@ -313,6 +334,7 @@ const ImageOP = mongoose.model("ImageOP", ImageOPSchema)
 const AudioOP = mongoose.model("AudioOP", AudioOPSchema)
 const HamSpam = mongoose.model("HamSpam", HamSpamSchema)
 const HiddenPost = mongoose.model("HiddenPost", HiddenPostSchema)
+const EditedPost = mongoose.model("EditedPost", EditedPostSchema)
 
 module.exports = {PostContent,
                     ImageReply,
@@ -324,4 +346,6 @@ module.exports = {PostContent,
                     VideoOP,
                     ImageOP,
                     HiddenPost,
-                    HamSpam}
+                    HamSpam,
+                    EditedPost
+                }

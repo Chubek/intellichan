@@ -221,7 +221,7 @@ const VideoMetadataSchema = new Schema({
     type: String,
     mime_type: String,
     size: Number,
-    duration: mongoose.Types.Decimal128
+    exif: mongoose.Types.Decimal128
 
 })
 

@@ -21,7 +21,6 @@ const components = require("../middleware/components")
 const fs = require('fs');
 const path = require("path")
 var sha256File = require('sha256-file')
-const fileToArrayBuffer = require('file-to-array-buffer')
 var ExifImage = require('exif').ExifImage
 //GETs
 
@@ -142,8 +141,8 @@ router.post('/create/image/file/:postid', components.auth, (req, res) => {
                                                             }, {new: true})
                                                             .then(update_doc => {
     
-                                                                ImageOPSchema.updateOne({_id: postId},
-                                                                    {$setOnInsert: {image_id: update_doc._id }},
+                                                                ImageOPSchema.findOneAndUpdate({_id: postId},
+                                                                    {$set: {image_id: update_doc._id }},
                                                                     {upsert: true})
                                                                         .then(() => {
                                                                             res.status(200).json({
@@ -194,7 +193,165 @@ router.post('/create/image/file/:postid', components.auth, (req, res) => {
 })
 
 
+// @route   POST /post/create/image/body
+// @desc    Create image post
+// @access  Private
+router.post('/create/video/body', [components.auth, components.increment], (req, res) => {
+    const userId = req.user.id
+    const userName = req.user.displayName
+    const incId = req.inc.next    
+    const sentIp = req.ip
 
+    
+
+    const VideoOP = new VideoOPSchema({
+        numerical_id: incId,
+        submitter_id: userId,
+        submitter_name: userName,
+        sent_ip: sentIp
+            })
+
+        VideoOP.save()
+            .then(video_doc => {
+                res.status(201).json({video_body_id: video_doc._id})
+             })
+                .catch(e => {
+                    res.status(500).json({ e })
+                    console.log(e)
+                })
+    
+    
+})
+
+// @route   POST /post/create/video/file/:postid
+// @desc    Upload video
+// @access  Private
+router.post('/create/video/file/:postid', components.auth, (req, res) => {
+    const postId = req.params.postid
+    const vidFile = req.files.vidFile
+
+    const upload_dir = path.join(VID_DIR, postId)
+    
+    fs.exists(upload_dir, exists => {
+        if (!exists) {
+            fs.mkdir(upload_dir, err => {
+                
+                if (err) throw err
+                return
+            })
+        } else {
+            
+            console.log("Folder already exists!")
+        }
+    })
+
+     
+
+    const vidExt = vidFile.name.split(".").slice(-1)[0]
+
+   VideoOPSchema.findOne({_id: postId})
+    .then(op_doc => {
+        const vidName = op_doc.numerical_id
+
+        const vidLoc = path.join(upload_dir, `${vidName}.${vidExt}`)
+        console.log(vidLoc)
+        vidFile.mv(vidLoc, err => {
+            if (err) throw err
+
+            sha256File(vidLoc, (err_sha256, check_sum) => {
+
+                if (err_sha256) throw err_sha256
+                const ThreadVideo = new ThreadVideoSchema({
+                    thread_id: postId,
+                    video_file_id: '',
+                    video_metadata_id: ''
+                })
+
+                ThreadVideo.save()
+                    .then(thread_vid_doc => {
+
+                        ExifVideo({video: vidLoc}, (err_metadata, metadata) => {
+                            if (err_metadata) {
+                                console.log(err_metadata)
+                                metadata = {}
+                                
+                            }
+                            
+                            const VideoFile = new VideoFileSchema({
+                                thread_video_id: thread_vid_doc._id,
+                                upload_path: vidLoc
+                            })    
+                            
+                            VideoFile.save()
+                                .then(vid_file_doc => {
+                                    const VideoMetadata = new VideoMetadataSchema({
+                                        thread_video_id: thread_vid_doc._id,
+                                        sha256: check_sum,
+                                        type: vidExt,
+                                        mime_type: vidFile.mimetype,
+                                        size: vidFile.size,
+                                        exif_data: metadata
+                                    })
+    
+                                    VideoMetadata.save()
+                                        .then(vid_md_doc => {
+                                            ThreadVideoSchema.findOneAndUpdate({_id: thread_vid_doc._id},
+                                                            {
+                                                                video_file_id: vid_file_doc._id,
+                                                                video_metadata_id: vid_md_doc.id
+                                                            }, {new: true})
+                                                            .then(update_doc => {
+    
+                                                                VideoOPSchema.findOneAndUpdate({_id: postId},
+                                                                    {$set: {video_id: update_doc._id }},
+                                                                    {upsert: true})
+                                                                        .then(() => {
+                                                                            res.status(200).json({
+                                                                                thread_video_id: thread_vid_doc._id,
+                                                                                video_file_id: vid_file_doc._id,
+                                                                                vid_metadata_id: vid_md_doc._id
+                                                                            })
+                                                                        })
+                                                                        .catch(e => {
+                                                                            console.log(e)
+                                                                        })
+                                                            }
+                                                                
+                                                                
+                                                                )
+                                                                .catch(e => {
+                                                                    console.log(e)
+                                                                })
+                                                                    
+                                        })
+                                        .catch(e => {
+                                            console.log(e)
+                                        })
+                                })
+                                .catch(e => {
+                                    console.log(e)
+                                })
+                        })
+
+                    })
+                    .catch(e => {
+                        console.log(e)
+                    })
+                
+                    
+                    
+                
+            })
+                
+
+                
+        })
+
+    })
+
+
+
+})
 
 
 //PUTs
