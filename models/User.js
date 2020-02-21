@@ -31,8 +31,9 @@ const UserSchema = new Schema({
     watcher_id: String,
     sent_ips: [String],
     last_ip: String,
-    tripcodes_id: [String]
-    
+    tripcodes_id: [String],
+    playlists_id: [String],
+    streams_id: [String]
 
 })
 

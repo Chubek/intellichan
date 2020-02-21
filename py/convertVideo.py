@@ -1,5 +1,4 @@
-from converter import Converter
-conv = Converter()
+import moviepy.editor as mp
 import os
 
 class VideoConverter:
@@ -9,7 +8,7 @@ class VideoConverter:
     def __init__(self):
         pass        
 
-    def convert_video(self, videoLoc):       
+    def convert_video(self, videoLoc, width, height, bitrate):       
         nameWithExt = videoLoc.split("\\")[-1]
         extension = nameWithExt.split(".")[-1]
         name = nameWithExt.split(".")[-2]    
@@ -20,23 +19,8 @@ class VideoConverter:
         newOld = path + "old." + extension
 
         os.rename(videoLoc, newOld)
-        print(newOld)
-        print(newPath)
-        convert = conv.convert(newOld, newPath, {
-                'format': 'mp4',
-                'audio': {
-                'codec': 'aac',
-                'samplerate': 11025,
-                'channels': 2
-            },
-                'video': {
-                'codec': 'hevc',
-                'width': 720,
-                'height': 400,
-                'fps': 25
-                 }})
-
-        for timecode in convert:
-            print(f'\rConverting ({timecode:.2f}) ...')
-
+       
+        clip = mp.VideoFileClip(newOld)
+        clip_resized = clip.resize(width=width, height=height)
+        clip_resized.write_videofile(newPath, bitrate=bitrate)
         os.remove(newOld)

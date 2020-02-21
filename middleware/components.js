@@ -23,6 +23,8 @@ const components = {
 
         if (!current_id) return res.status(401).json({ message: "No id, access denied." })
 
+        current_id = parseInt(current_id)
+
         try {
             req.inc = {next: current_id + 1}
             next()

@@ -29,6 +29,7 @@
     "exif-reader": "^1.0.3",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.6",
+    "ffprobe": "^1.1.0",
     "file-to-array-buffer": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
@@ -40,7 +41,8 @@
     "randomatic": "^3.1.1",
     "sha256-file": "^1.0.0",
     "underscore": "^1.9.2",
-    "underscore.date": "^0.6.1"
+    "underscore.date": "^0.6.1",
+    "video-length": "^2.0.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

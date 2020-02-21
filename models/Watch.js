@@ -26,10 +26,30 @@ const ThreadWatcherSchema = new Schema({
 
 })
 
+const PlaylistUserSchema = new Schema({
+    users_id: {
+        type: [String],
+        required: true
+    },
+    playlist_id: String
+})
+
+const PlaylistMediaSchema = new Schema({
+    playlist_user_id: {
+        type: String,
+        required: true
+    },
+    videos_id: [String],
+    audios_id: [String]
+})
+
 const ThreadWatcher = mongoose.model("ThreadWatcher", ThreadWatcherSchema)
 const UserWatched = mongoose.model("UserWatched", UserWatchedSchema)
+const PlaylistMedia = mongoose.model("PlaylistMedia", PlaylistMediaSchema)
+
 
 module.exports = {
     ThreadWatcher,
-    UserWatched
+    UserWatched,
+    PlaylistMedia
 }

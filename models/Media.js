@@ -32,6 +32,8 @@ const ImageMetadataSchema = new Schema({
     type: String,
     mime_type: String,
     size: Number,  
+    width: Number,
+    height: Number,
     exif_data: { 
         image: 
             { Make: String,
@@ -151,6 +153,8 @@ const AudioMetadataSchema = new Schema({
     type: String,
     mime_type: String,
     size: Number,
+    duration: mongoose.Types.Decimal128,
+    bitrate: String,
     tags: {
         format: {
             container: String,
@@ -221,7 +225,8 @@ const VideoMetadataSchema = new Schema({
     type: String,
     mime_type: String,
     size: Number,
-    exif: mongoose.Types.Decimal128
+    duration: String   
+    
 
 })
 
