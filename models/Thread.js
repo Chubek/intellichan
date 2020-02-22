@@ -29,7 +29,8 @@ const ImageOPSchema = new Schema({
     watched_id: [String],
     sent_ip: String,
     poll_id: String,
-    edited_id: [String]
+    edited: Boolean,
+    edited_date: Date
     
 
 })
@@ -62,7 +63,8 @@ const VideoOPSchema = new Schema({
     watched_id: [String],
     sent_ip: String,
     poll_id: String,
-    edited_id: [String]
+    edited: Boolean,
+    edited_date: Date
 
 })
 
@@ -94,7 +96,8 @@ const AudioOPSchema = new Schema({
     watched_id: [String],
     sent_ip: String,
     poll_id: String,
-    edited_id: [String]
+    edited: Boolean,
+    edited_date: Date
 
 })
 
@@ -129,7 +132,8 @@ const AnonymousOPSchema = new Schema({
     hidden_id: String,
     watched_id: [String],
     sent_ip: String,
-    edited_id: [String]
+    edited: Boolean,
+    edited_date: Date
 })
 
 
@@ -169,7 +173,8 @@ const AnonymousReplySchema = new Schema({
     spam_ham_id: String,
     hidden_id: String,
     sent_ip: String,
-    edited_id: [String]
+    edited: Boolean,
+    edited_date: Date
 
 })
 
@@ -201,7 +206,8 @@ const ImageReplySchema = new Schema({
     spam_ham_id: String,
     hidden_id: String,
     sent_ip: String,
-    edited_id: [String]
+    edited: Boolean,
+    edited_date: Date
 })
 
 
@@ -232,7 +238,8 @@ const VideoReplySchema = new Schema({
     spam_ham_id: String,
     hidden_id: String,
     sent_ip: String,
-    edited_id: [String]
+    edited: Boolean,
+    edited_date: Date
 })
 
 
@@ -263,7 +270,8 @@ const AudioReplySchema = new Schema({
     spam_ham_id: String,
     hidden_id: String,
     sent_ip: String,
-    edited_id: [String]
+    edited: Boolean,
+    edited_date: Date
 })
 
 const PostContentSchema = new Schema({
@@ -316,17 +324,7 @@ const HiddenPostSchema = new Schema({
     }
 })
 
-const EditedPostSchema = new Schema({
-    post_id: {
-        type: String,
-        required: true
-    },
-    string_difference: String,
-    edited_at: {
-        type: Date,
-        default: Date.now
-    }
-})
+
 
 
 const PostContent = mongoose.model("PostContent", PostContentSchema)

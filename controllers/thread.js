@@ -32,9 +32,9 @@ const sha256File = require('sha256-file')
 const ExifImage = require('exif').ExifImage
 const ffprobe = require('ffprobe'),
     ffprobeStatic = require('ffprobe-static')
-
+const moment = require("moment")
 const sizeOf = require('image-size')
-
+const Diff = require("diff")
 
 //GETs
 // @route   GET /post/get/image/op
@@ -1215,9 +1215,123 @@ router.put('/set/op/audio/hidden/:postid', components.auth, (req, res) => {
         })
 } )
 
-// @route   PUT /post/set/op/image/delete/:postid
-// @desc    Delete image OP
+
+// @route   PUT /post/set/image/content/:postid
+// @desc    Edit post content
 // @access  Private
+route.put('/set/image/content/:postid', components.auth, (req, res) => {
+    const authId = req.user.id
+    const postId = req.params.postid
+    const {postTitle, postMessage} = req.body
+
+    ImageOPSchema.findOne({_id: postid})
+        .then(op_doc => {
+            const contentId = op_doc.content_id
+            const now = moment()
+            const submittedDate = moment(op_doc.date_submitted)
+            const difference = now.diff(submittedDate, 'minutes')
+            const is_submitter = op_doc.submitter_id === authId
+            
+            if (difference <= 30 && is_submitter) {
+                PostContentSchema.updateOne({_id: contentId}, {
+                    title: postTitle,
+                    message: postMessage
+                })
+                    .then(() => {
+                        ImageOPSchema.findOneAndUpdate({_id: postId}, {
+                            $set: {edited: true, 
+                            edited_date: new Date()}
+                        }, {upsert: true})
+                            .catch(e => {
+                                res.status(500).json({ e })
+                                console.log(e)
+                            })
+                        res.status(200).json({message: "Title and message updated."})})
+                        .catch(e => {
+                            res.status(500).json({e})
+                            console.log(e)
+                        })
+            } else if (difference > 30 && is_submitter) {
+                PostContentSchema.updateOne({_id: contentId}, {
+                    message: postMessage
+                })
+                    .then(() => {
+                        ImageOPSchema.findOneAndUpdate({_id: postId}, {
+                            $set: {edited: true, 
+                            edited_date: new Date()}
+                        }, {upsert: true})
+                            .catch(e => {
+                                res.status(500).json({ e })
+                                console.log(e)
+                            })
+                        res.status(200).json({message: "Message updated."})})
+                        .catch(e => {
+                            res.status(500).json({e})
+                            console.log(e)
+                        })
+            }
+            
+        })
+})
+
+
+// @route   PUT /post/set/video/content/:postid
+// @desc    Edit post content
+// @access  Private
+route.put('/set/video/content/:postid', components.auth, (req, res) => {
+    const authId = req.user.id
+    const postId = req.params.postid
+    const {postTitle, postMessage} = req.body
+
+    VideoOPSchema.findOne({_id: postid})
+        .then(op_doc => {
+            const contentId = op_doc.content_id
+            const now = moment()
+            const submittedDate = moment(op_doc.date_submitted)
+            const difference = now.diff(submittedDate, 'minutes')
+            const is_submitter = op_doc.submitter_id === authId
+            
+            if (difference <= 30 && is_submitter) {
+                PostContentSchema.updateOne({_id: contentId}, {
+                    title: postTitle,
+                    message: postMessage
+                })
+                    .then(() => {
+                        VideoOPSchema.findOneAndUpdate({_id: postId}, {
+                            $set: {edited: true, 
+                            edited_date: new Date()}
+                        }, {upsert: true})
+                            .catch(e => {
+                                res.status(500).json({ e })
+                                console.log(e)
+                            })
+                        res.status(200).json({message: "Title and message updated."})})
+                        .catch(e => {
+                            res.status(500).json({e})
+                            console.log(e)
+                        })
+            } else if (difference > 30 && is_submitter) {
+                PostContentSchema.updateOne({_id: contentId}, {
+                    message: postMessage
+                })
+                    .then(() => {
+                        VideoOPSchema.findOneAndUpdate({_id: postId}, {
+                            $set: {edited: true, 
+                            edited_date: new Date()}
+                        }, {upsert: true})
+                            .catch(e => {
+                                res.status(500).json({ e })
+                                console.log(e)
+                            })
+                        res.status(200).json({message: "Message updated."})})
+                        .catch(e => {
+                            res.status(500).json({e})
+                            console.log(e)
+                        })
+            }
+            
+        })
+})
 
 
 //DELs
@@ -1289,6 +1403,63 @@ router.delete('/delete/op/image/delete/:postid', components.auth, (req, res) => 
     
 })
 
+// @route   PUT /post/set/audio/content/:postid
+// @desc    Edit post content
+// @access  Private
+route.put('/set/audio/content/:postid', components.auth, (req, res) => {
+    const authId = req.user.id
+    const postId = req.params.postid
+    const {postTitle, postMessage} = req.body
+
+    AudioOPSchema.findOne({_id: postid})
+        .then(op_doc => {
+            const contentId = op_doc.content_id
+            const now = moment()
+            const submittedDate = moment(op_doc.date_submitted)
+            const difference = now.diff(submittedDate, 'minutes')
+            const is_submitter = op_doc.submitter_id === authId
+            
+            if (difference <= 30 && is_submitter) {
+                PostContentSchema.updateOne({_id: contentId}, {
+                    title: postTitle,
+                    message: postMessage
+                })
+                    .then(() => {
+                        AudioOPSchema.findOneAndUpdate({_id: postId}, {
+                            $set: {edited: true, 
+                            edited_date: new Date()}
+                        }, {upsert: true})
+                            .catch(e => {
+                                res.status(500).json({ e })
+                                console.log(e)
+                            })
+                        res.status(200).json({message: "Title and message updated."})})
+                        .catch(e => {
+                            res.status(500).json({e})
+                            console.log(e)
+                        })
+            } else if (difference > 30 && is_submitter) {
+                PostContentSchema.updateOne({_id: contentId}, {
+                    message: postMessage
+                })
+                    .then(() => {
+                        AudioOPSchema.findOneAndUpdate({_id: postId}, {
+                            $set: {edited: true, 
+                            edited_date: new Date()}
+                        }, {upsert: true})
+                            .catch(e => {
+                                res.status(500).json({ e })
+                                console.log(e)
+                            })
+                        res.status(200).json({message: "Message updated."})})
+                        .catch(e => {
+                            res.status(500).json({e})
+                            console.log(e)
+                        })
+            }
+            
+        })
+})
 
 // @route   Delete /post/delete/op/video/delete/:postid
 // @desc    Delete video OP
@@ -1428,5 +1599,5 @@ router.delete('/delete/op/audio/delete/:postid', components.auth, (req, res) => 
     
 
  })
-
+},)},)
 module.exports = router

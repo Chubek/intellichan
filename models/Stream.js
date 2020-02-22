@@ -4,7 +4,18 @@ const Schema = mongoose.Schema
 
 const StreamSchema = new Schema({
     stream_user: String,
-    user_conditions_id: {
+    includes: {
+        includes_image: Boolean,
+        includes_video: Boolean,
+        includes_audio: Boolean,
+        includes_anonymous: Boolean
+    },
+    date_conditions: {
+        greater_than: Date,
+        less_than: Date,
+        equals_to: Date
+    },
+    user_conditions: {
         users_included: [String],
         users_excluded: [String],
         date_registered_gt: Date,
