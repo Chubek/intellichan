@@ -12,7 +12,8 @@ class VideoConverter:
         nameWithExt = videoLoc.split("\\")[-1]
         extension = nameWithExt.split(".")[-1]
         name = nameWithExt.split(".")[-2]    
-
+        if len(name[0:-1]) > 1:
+            name = ".".join(name)
         newFile = name + ".mp4"
         path = videoLoc.replace(nameWithExt, '')
         newPath = path + newFile
@@ -24,3 +25,5 @@ class VideoConverter:
         clip_resized = clip.resize(width=width, height=height)
         clip_resized.write_videofile(newPath, bitrate=bitrate)
         os.remove(newOld)
+
+    

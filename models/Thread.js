@@ -269,7 +269,8 @@ const AudioReplySchema = new Schema({
 const PostContentSchema = new Schema({
     post_id: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     post_type: String,
     title: {
@@ -287,7 +288,8 @@ const HamSpamSchema = new Schema({
         unique: true
     },
     ham_percentage: Number,
-    spam_percentage: Number
+    spam_percentage: Number,
+    post_type: String
 })
 
 const HiddenPostSchema = new Schema({
@@ -305,6 +307,10 @@ const HiddenPostSchema = new Schema({
         default: false
     },
     admin_hidden: {
+        type: Boolean,
+        default: false
+    },
+    janitor_hidden: {
         type: Boolean,
         default: false
     }

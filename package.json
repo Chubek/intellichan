@@ -31,6 +31,8 @@
     "express-fileupload": "^1.1.6",
     "ffprobe": "^1.1.0",
     "file-to-array-buffer": "^1.0.0",
+    "image-size": "^0.8.3",
+    "jslint": "^0.12.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "mongoose": "^5.8.12",

@@ -153,33 +153,8 @@ const AudioMetadataSchema = new Schema({
     type: String,
     mime_type: String,
     size: Number,
-    duration: mongoose.Types.Decimal128,
-    bitrate: String,
-    tags: {
-        format: {
-            container: String,
-            codec: String,
-            codec_profile: String,
-            duration: mongoose.Types.Decimal128,
-            bitrate: Number,
-            sample_rate: mongoose.Types.Decimal128,
-            lossless: Boolean,
-            channels: Number
-        },
-        generic_tags: {
-            title: String,
-            tracks: Number,
-            artist: String,
-            artists: [String],
-            album_artist: String,
-            composer: String,
-            year: Number,
-            album: String,
-            label: String,
-            genres: [String],
-            avg_gain_level: Number
-        }
-    }
+    duration: String,      
+    
 })
 
 const ThreadVideoSchema = new Schema({
@@ -240,7 +215,7 @@ const ThreadVideo = mongoose.model("ThreadVideo", ThreadVideoSchema)
 const ThreadAudio = mongoose.model("ThreadAudio", ThreadAudioSchema)
 const ThreadImage = mongoose.model("ThreadImage", ThreadImageSchema)
 const ImageLocation = mongoose.model("ImageLocation", ImageLocationSchema)
-const  VideoThumb = mongoose.model("VideoThumb",  VideoThumbSchema)
+const VideoThumb = mongoose.model("VideoThumb",  VideoThumbSchema)
 const ImageThumb = mongoose.model("ImageThumb", ImageThumbSchema)
 
 module.exports = {

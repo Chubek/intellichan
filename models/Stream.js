@@ -3,15 +3,44 @@ const Schema = mongoose.Schema
 
 
 const StreamSchema = new Schema({
-    stream_user_id: String,
-    user_conditions_id: String,
-    image_conditions_id: String,
-    audio_conditions_id: String,
-    vide_conditions_id: String,
-    title_conditions_id: String,
-    body_conditions_id: String,
-    body_tags_id: String,
-    body_hashtags_id: String
+    stream_user: String,
+    user_conditions_id: {
+        users_included: [String],
+        users_excluded: [String],
+        date_registered_gt: Date,
+        date_registered_lt: Date,
+        date_registered_eq: Date
+    },
+    image_conditions: {
+        height: Number,
+        width: Number
+    },
+    audio_conditions: {
+        duration: String
+    },
+    video_conditions: {
+        duration: String
+    },
+    title_conditions: {
+        included_words: [String],
+        excluded_words: [String]
+    },
+    body_conditions: {
+        included_words: [String],
+        excluded_words: [String]
+    },
+    body_tags: {
+        included_tags: [String],
+        excludes_tags: [String]
+    },
+    body_hashtags: {
+        included_hashtags: [String],
+        excludes_hashtags: [String]
+    },
+    category_conditions: {
+        included_categories: [String],
+        excludes_categories: [String]
+    }
 
 })
 
@@ -24,16 +53,10 @@ const UserStreamSchema = new Schema({
     stream_id: String
 })
 
-const StreamUserConditionsSchema = new Schema({
-    stream_id: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    users_included: [String],
-    users_excluded: [String],
-    date_registered_gt: Date,
-    date_registered_lt: Date,
-    date_registered_eq: Date
-})
+const Stream = mongoose.model("Stream", StreamSchema)
+const UserStream = mongoose.model("UserStream", UserStreamSchema)
 
+module.exports = {
+    Stream,
+    UserStream
+}
