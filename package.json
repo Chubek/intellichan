@@ -28,7 +28,7 @@
     "eslint": "^6.8.0",
     "exif": "^0.6.0",
     "exif-reader": "^1.0.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-fileupload": "^1.1.6",
     "ffprobe": "^1.1.0",
     "file-to-array-buffer": "^1.0.0",
