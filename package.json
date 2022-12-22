@@ -34,7 +34,7 @@
     "file-to-array-buffer": "^1.0.0",
     "image-size": "^0.8.3",
     "jslint": "^0.12.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "moment": "^2.24.0",
     "mongoose": "^5.8.12",
     "mongoose-slug-generator": "^1.0.4",
